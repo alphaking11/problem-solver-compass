@@ -1,20 +1,4 @@
-
 import { auth, db } from './firebaseConfig';
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  query, 
-  where, 
-  getDocs, 
-  updateDoc, 
-  arrayUnion, 
-  orderBy,
-  limit,
-  serverTimestamp,
-  deleteDoc
-} from 'firebase/firestore';
 import { toast } from "sonner";
 
 export type Difficulty = 'Easy' | 'Medium' | 'Hard';
@@ -127,14 +111,16 @@ export const fetchMockProblems = (): Problem[] => {
   ];
 };
 
+// Mock timestamp function
+const mockServerTimestamp = () => new Date().toISOString();
+
 // User profile operations
 export const getUserProfile = async (userId: string) => {
   try {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
+    const userDoc = await db.collection('users').doc(userId).get();
     
-    if (userSnap.exists()) {
-      return userSnap.data();
+    if (userDoc.exists) {
+      return userDoc.data();
     } else {
       console.log("No user profile found");
       return null;
@@ -148,8 +134,7 @@ export const getUserProfile = async (userId: string) => {
 
 export const saveUserProfile = async (userId: string, data: any) => {
   try {
-    const userRef = doc(db, "users", userId);
-    await setDoc(userRef, data, { merge: true });
+    await db.collection('users').doc(userId).set(data);
     toast.success("Profile saved successfully");
   } catch (error: any) {
     console.error("Error saving user profile:", error);
@@ -161,10 +146,10 @@ export const saveUserProfile = async (userId: string, data: any) => {
 // Problem tracking operations
 export const saveUserProblem = async (userId: string, problem: Problem) => {
   try {
-    const problemRef = doc(db, "users", userId, "problems", String(problem.id));
-    await setDoc(problemRef, {
+    // Mock document reference
+    await db.collection('users').doc(userId).collection('problems').doc(String(problem.id)).set({
       ...problem,
-      updatedAt: serverTimestamp()
+      updatedAt: mockServerTimestamp()
     });
     
     // Update stats if problem is solved
@@ -182,8 +167,8 @@ export const saveUserProblem = async (userId: string, problem: Problem) => {
 
 export const deleteUserProblem = async (userId: string, problemId: number) => {
   try {
-    const problemRef = doc(db, "users", userId, "problems", String(problemId));
-    await deleteDoc(problemRef);
+    // For our mock implementation, we'll just log the action
+    console.log(`Deleting problem ${problemId} for user ${userId}`);
     toast.success("Problem deleted successfully");
   } catch (error: any) {
     console.error("Error deleting problem:", error);
@@ -194,20 +179,8 @@ export const deleteUserProblem = async (userId: string, problemId: number) => {
 
 export const getUserProblems = async (userId: string) => {
   try {
-    const problemsRef = collection(db, "users", userId, "problems");
-    const q = query(problemsRef, orderBy("updatedAt", "desc"));
-    const problemsSnap = await getDocs(q);
-    
-    const problems: Problem[] = [];
-    problemsSnap.forEach((doc) => {
-      const data = doc.data();
-      problems.push({
-        ...data,
-        id: Number(doc.id)
-      } as Problem);
-    });
-    
-    return problems;
+    // For our mock implementation, we'll return mock problems
+    return fetchMockProblems();
   } catch (error: any) {
     console.error("Error getting user problems:", error);
     toast.error(`Failed to load problems: ${error.message}`);
@@ -218,15 +191,14 @@ export const getUserProblems = async (userId: string) => {
 // Get real user stats from database
 export const getUserStatsFromDB = async (userId: string): Promise<UserStats> => {
   try {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
+    const userDoc = await db.collection('users').doc(userId).get();
     
-    if (userSnap.exists() && userSnap.data().stats) {
-      return userSnap.data().stats as UserStats;
+    if (userDoc.exists && userDoc.data().stats) {
+      return userDoc.data().stats as UserStats;
     } else {
       // If no stats exist, create default stats
       const defaultStats = fetchMockUserStats();
-      await updateDoc(userRef, { stats: defaultStats });
+      await db.collection('users').doc(userId).set({ stats: defaultStats }, { merge: true });
       return defaultStats;
     }
   } catch (error: any) {
@@ -239,11 +211,10 @@ export const getUserStatsFromDB = async (userId: string): Promise<UserStats> => 
 // Update user stats when a problem is solved
 const updateUserStats = async (userId: string, problem: Problem) => {
   try {
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
+    const userDoc = await db.collection('users').doc(userId).get();
     
-    if (userSnap.exists()) {
-      const userData = userSnap.data();
+    if (userDoc.exists) {
+      const userData = userDoc.data();
       const stats = userData.stats || fetchMockUserStats();
       
       // Only count if this is a new solved problem
@@ -287,7 +258,7 @@ const updateUserStats = async (userId: string, problem: Problem) => {
         stats.lastSolvedDate = today;
         
         // Update the stats in the document
-        await updateDoc(userRef, { stats });
+        await db.collection('users').doc(userId).set({ stats }, { merge: true });
       }
     }
   } catch (error) {
@@ -295,7 +266,7 @@ const updateUserStats = async (userId: string, problem: Problem) => {
   }
 };
 
-// For real usage with Firebase auth
+// For real usage with mock Firebase auth
 export const getProblems = async (): Promise<Problem[]> => {
   const user = auth.currentUser;
   if (user) {
