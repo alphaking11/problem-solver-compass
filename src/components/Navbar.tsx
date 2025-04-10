@@ -1,76 +1,80 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Home, ListChecks, User, LogOut } from 'lucide-react';
+import { signOut } from '@/services/authService';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  LayoutDashboard, 
-  Code, 
-  User, 
-  Calendar, 
-  LogOut 
-} from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();
-  
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
-    <div className="flex flex-col h-screen border-r bg-card">
-      <div className="p-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-md bg-leetcode-primary flex items-center justify-center">
-            <Code size={18} className="text-white" />
-          </div>
-          <span className="font-semibold text-lg">ProblemSolver</span>
-        </div>
+    <div className="flex flex-col h-full bg-gray-100 p-4">
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-center">Problem Solver Compass</h1>
+        {currentUser && (
+          <p className="text-sm text-center text-muted-foreground mt-1">
+            Welcome, {currentUser.displayName || 'User'}
+          </p>
+        )}
       </div>
-      <div className="flex-1 px-3 py-4 space-y-2">
-        <Link to="/">
-          <Button 
-            variant={isActive('/') ? "default" : "ghost"} 
-            className="w-full justify-start gap-2"
-          >
-            <LayoutDashboard size={18} />
-            Dashboard
-          </Button>
+      
+      <nav className="space-y-2 flex-1">
+        <Link
+          to="/"
+          className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 transition-colors ${
+            isActive('/') ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground'
+          }`}
+        >
+          <Home size={18} />
+          <span>Dashboard</span>
         </Link>
-        <Link to="/problems">
-          <Button 
-            variant={isActive('/problems') ? "default" : "ghost"} 
-            className="w-full justify-start gap-2"
-          >
-            <Code size={18} />
-            Problems
-          </Button>
+        <Link
+          to="/problems"
+          className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 transition-colors ${
+            isActive('/problems') ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground'
+          }`}
+        >
+          <ListChecks size={18} />
+          <span>Problems</span>
         </Link>
-        <Link to="/profile">
-          <Button 
-            variant={isActive('/profile') ? "default" : "ghost"} 
-            className="w-full justify-start gap-2"
-          >
-            <User size={18} />
-            Profile
-          </Button>
+        <Link
+          to="/profile"
+          className={`flex items-center gap-2 p-2 rounded-md hover:bg-primary/10 transition-colors ${
+            isActive('/profile') ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground'
+          }`}
+        >
+          <User size={18} />
+          <span>Profile</span>
         </Link>
-      </div>
-      <div className="p-4 border-t">
-        <div className="flex items-center gap-3 mb-4">
-          <Avatar>
-            <AvatarFallback className="bg-leetcode-primary text-white">JS</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium text-sm">John Smith</p>
-            <p className="text-xs text-muted-foreground">johnsmith@example.com</p>
-          </div>
-        </div>
-        <Button variant="outline" className="w-full justify-start gap-2">
-          <LogOut size={18} />
-          Sign Out
-        </Button>
+      </nav>
+      
+      <div className="mt-auto">
+        {currentUser && (
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2"
+            onClick={handleSignOut}
+          >
+            <LogOut size={16} />
+            <span>Sign Out</span>
+          </Button>
+        )}
       </div>
     </div>
   );

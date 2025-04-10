@@ -26,7 +26,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ stats }) => {
               {stats.easy.solved} / {stats.easy.total}
             </span>
           </div>
-          <Progress value={calculatePercentage(stats.easy.solved, stats.easy.total)} className="h-2 bg-muted" indicatorClassName="bg-leetcode-easy" />
+          <Progress value={calculatePercentage(stats.easy.solved, stats.easy.total)} className="h-2 bg-muted" />
         </div>
         
         <div>
@@ -36,7 +36,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ stats }) => {
               {stats.medium.solved} / {stats.medium.total}
             </span>
           </div>
-          <Progress value={calculatePercentage(stats.medium.solved, stats.medium.total)} className="h-2 bg-muted" indicatorClassName="bg-leetcode-medium" />
+          <Progress value={calculatePercentage(stats.medium.solved, stats.medium.total)} className="h-2 bg-muted" />
         </div>
         
         <div>
@@ -46,7 +46,7 @@ const StatisticsCard: React.FC<StatisticsCardProps> = ({ stats }) => {
               {stats.hard.solved} / {stats.hard.total}
             </span>
           </div>
-          <Progress value={calculatePercentage(stats.hard.solved, stats.hard.total)} className="h-2 bg-muted" indicatorClassName="bg-leetcode-hard" />
+          <Progress value={calculatePercentage(stats.hard.solved, stats.hard.total)} className="h-2 bg-muted" />
         </div>
         
         <div className="pt-2 flex flex-col">
