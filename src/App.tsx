@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Problems from "./pages/Problems";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import { Layout } from "./pages/Layout";
 
 const queryClient = new QueryClient();
 
@@ -18,9 +19,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/problems" element={<Problems />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/problems" element={<Layout><Problems /></Layout>} />
+          <Route path="/profile" element={<Layout><Profile /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

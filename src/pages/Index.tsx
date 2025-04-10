@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Dashboard from '@/components/Dashboard';
 import { Problem, UserStats, getProblems, getUserStats } from '@/services/leetcodeService';
-import { Layout } from './Layout';
 
 const Index = () => {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -29,21 +28,19 @@ const Index = () => {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="flex flex-col items-center">
-            <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-            <p className="mt-4 text-muted-foreground">Loading dashboard data...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+          <p className="mt-4 text-muted-foreground">Loading dashboard data...</p>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <div>
       {stats && <Dashboard stats={stats} recentProblems={problems} />}
-    </Layout>
+    </div>
   );
 };
 
