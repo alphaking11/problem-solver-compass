@@ -15,10 +15,20 @@ const app = {
 // Mock Firebase auth
 export const auth = {
   currentUser: null,
-  onAuthStateChanged: (callback: Function) => {
-    callback(auth.currentUser);
+  _listeners: [] as Function[],
+  onAuthStateChanged: function(callback: Function) {
+    if (!this._listeners) {
+      this._listeners = [];
+    }
+    this._listeners.push(callback);
+    
+    // Call with current state
+    callback(this.currentUser);
+    
     // Return an unsubscribe function
-    return () => {};
+    return () => {
+      this._listeners = this._listeners.filter(cb => cb !== callback);
+    };
   },
 };
 

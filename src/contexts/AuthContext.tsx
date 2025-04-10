@@ -25,18 +25,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("AuthProvider: Setting up auth state listener");
+    
     // Check if there's already a user
     const user = getCurrentUser();
     if (user) {
+      console.log("AuthProvider: Found existing user", user);
       setCurrentUser(user);
     }
-    setLoading(false);
-
+    
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChange((user) => {
+      console.log("AuthProvider: Auth state changed", user);
       setCurrentUser(user);
       setLoading(false);
     });
+
+    // After initial setup, set loading to false
+    setLoading(false);
 
     return unsubscribe;
   }, []);
@@ -45,6 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     currentUser,
     loading
   };
+
+  console.log("AuthProvider: Current auth state", { currentUser, loading });
 
   return (
     <AuthContext.Provider value={value}>

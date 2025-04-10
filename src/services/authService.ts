@@ -38,6 +38,13 @@ export const registerUser = async (email: string, password: string, displayName:
     // Update auth.currentUser
     (auth as any).currentUser = newUser;
     
+    // Trigger the auth state change listeners
+    if (auth.onAuthStateChanged) {
+      for (const callback of (auth as any)._listeners || []) {
+        callback(newUser);
+      }
+    }
+    
     toast.success("Registration successful!");
     return newUser;
   } catch (error: any) {
@@ -66,6 +73,13 @@ export const signIn = async (email: string, password: string) => {
     // Update auth.currentUser
     (auth as any).currentUser = mockUser;
     
+    // Trigger the auth state change listeners
+    if (auth.onAuthStateChanged) {
+      for (const callback of (auth as any)._listeners || []) {
+        callback(mockUser);
+      }
+    }
+    
     toast.success("Sign in successful!");
     return mockUser;
   } catch (error: any) {
@@ -79,6 +93,14 @@ export const signOut = async () => {
   try {
     // Clear current user
     (auth as any).currentUser = null;
+    
+    // Trigger the auth state change listeners
+    if (auth.onAuthStateChanged) {
+      for (const callback of (auth as any)._listeners || []) {
+        callback(null);
+      }
+    }
+    
     toast.success("Signed out successfully");
   } catch (error: any) {
     toast.error(`Sign out failed: ${error.message}`);
@@ -93,11 +115,19 @@ export const getCurrentUser = (): User | null => {
 
 // Subscribe to auth state changes
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
-  // Simulate onAuthStateChanged
+  // Add callback to listeners array
+  if (!(auth as any)._listeners) {
+    (auth as any)._listeners = [];
+  }
+  (auth as any)._listeners.push(callback);
+  
+  // Immediately call with current state
   callback((auth as any).currentUser);
   
   // Return unsubscribe function
-  return () => {};
+  return () => {
+    (auth as any)._listeners = (auth as any)._listeners.filter((cb: any) => cb !== callback);
+  };
 };
 
 // Check if user is authenticated

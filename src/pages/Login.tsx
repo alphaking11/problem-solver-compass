@@ -15,18 +15,24 @@ const Login = () => {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, loading: authLoading } = useAuth();
+
+  // Debug logging
+  console.log("Login component: Auth state", { currentUser, authLoading });
 
   // Redirect if user is already logged in
   useEffect(() => {
-    if (currentUser) {
+    console.log("Login effect: Checking if redirect needed", { currentUser, authLoading });
+    if (!authLoading && currentUser) {
+      console.log("Login effect: Redirecting to dashboard");
       navigate('/', { replace: true });
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log("Login: Attempting authentication", { isLogin, email });
 
     try {
       if (isLogin) {
@@ -34,6 +40,7 @@ const Login = () => {
       } else {
         await registerUser(email, password, displayName);
       }
+      console.log("Login: Authentication successful, redirecting");
       navigate('/', { replace: true });
     } catch (error) {
       // Error handling is done in the auth service
