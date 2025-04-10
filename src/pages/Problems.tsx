@@ -1,24 +1,20 @@
 
 import React, { useEffect, useState } from 'react';
-import Dashboard from '@/components/Dashboard';
-import { Problem, UserStats, getProblems, getUserStats } from '@/services/leetcodeService';
+import ProblemTracker from '@/components/ProblemTracker';
+import { Problem, getProblems } from '@/services/leetcodeService';
 import { Layout } from './Layout';
 
-const Index = () => {
-  const [stats, setStats] = useState<UserStats | null>(null);
+const Problems = () => {
   const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const statsData = await getUserStats();
         const problemsData = await getProblems();
-        
-        setStats(statsData);
         setProblems(problemsData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching problems:', error);
       } finally {
         setLoading(false);
       }
@@ -33,7 +29,7 @@ const Index = () => {
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-            <p className="mt-4 text-muted-foreground">Loading dashboard data...</p>
+            <p className="mt-4 text-muted-foreground">Loading problems...</p>
           </div>
         </div>
       </Layout>
@@ -42,9 +38,17 @@ const Index = () => {
 
   return (
     <Layout>
-      {stats && <Dashboard stats={stats} recentProblems={problems} />}
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Problems</h1>
+          <p className="text-muted-foreground">
+            Track your progress and manage your problem-solving journey.
+          </p>
+        </div>
+        <ProblemTracker problems={problems} />
+      </div>
     </Layout>
   );
 };
 
-export default Index;
+export default Problems;

@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				leetcode: {
+					easy: '#00B8A3',
+					medium: '#FFC01E',
+					hard: '#FF375F',
+					blue: '#1890FF',
+					dark: '#2D3250',
+					light: '#F2F7FF',
+					primary: '#5C43F5',
+					secondary: '#3E32A8'
 				}
 			},
 			borderRadius: {
@@ -84,11 +95,20 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				pulse: {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.5' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+			},
+			fontFamily: {
+				code: ['Fira Code', 'monospace'],
+				sans: ['Inter', 'sans-serif']
 			}
 		}
 	},
