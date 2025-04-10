@@ -1,21 +1,33 @@
 
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// This is a dummy Firebase configuration for development
+// In a real app, you would use actual Firebase credentials
 
-const firebaseConfig = {
-  // Replace with your Firebase configuration
-  apiKey: "YOUR_API_KEY",
-  authDomain: "problem-solver-compass.firebaseapp.com",
-  projectId: "problem-solver-compass",
-  storageBucket: "problem-solver-compass.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_ID",
-  appId: "YOUR_APP_ID"
+// Mock Firebase app
+const app = {
+  name: 'dummy-firebase-app',
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Mock Firebase auth
+export const auth = {
+  currentUser: null,
+  onAuthStateChanged: (callback: Function) => {
+    callback(auth.currentUser);
+    // Return an unsubscribe function
+    return () => {};
+  },
+};
+
+// Mock Firestore database
+export const db = {
+  collection: () => ({
+    doc: () => ({
+      get: async () => ({
+        exists: true,
+        data: () => ({}),
+      }),
+      set: async () => {},
+    }),
+  }),
+};
 
 export default app;
